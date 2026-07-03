@@ -29,7 +29,7 @@ export const NAV_ITEMS = [
 export const TEAM_COLORS = {
   mercedes: '#27F4D2',
   ferrari: '#E8002D',
-  red_bull: '#3671C6',
+  red_bull: '#B11116',
   mclaren: '#FF8000',
   aston_martin: '#229971',
   alpine: '#0093CC',

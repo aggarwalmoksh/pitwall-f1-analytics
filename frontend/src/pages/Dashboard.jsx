@@ -212,10 +212,10 @@ export default function Dashboard() {
                           {p.familyName}
                         </span>
                         <span
-                          className="text-xs font-semibold"
+                          className="truncate text-xs font-semibold"
                           style={{ color: teamColor(p.constructorId) }}
                         >
-                          {p.constructorName.split(' ')[0]}
+                          {p.constructorName}
                         </span>
                       </div>
                     ))}
