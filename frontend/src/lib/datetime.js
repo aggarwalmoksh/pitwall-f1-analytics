@@ -58,6 +58,22 @@ export function isPastRace(race, now = new Date()) {
 }
 
 /**
+ * The very next session across the whole calendar — could be a practice,
+ * qualifying or the race, whichever is soonest. Returns
+ * { race, session } or null if the season is over.
+ */
+export function findNextSession(schedule, now = new Date()) {
+  for (const race of schedule) {
+    for (const session of race.sessions) {
+      if (session.date && session.date.getTime() >= now.getTime()) {
+        return { race, session }
+      }
+    }
+  }
+  return null
+}
+
+/**
  * Break a millisecond gap into { days, hours, minutes, seconds }.
  * Used by the countdown. Clamps at zero.
  */

@@ -108,3 +108,48 @@ export async function getSchedule(season) {
     }
   })
 }
+
+/**
+ * Most recent completed race result. Using round "last" lets Ergast pick the
+ * latest race with results, so we don't have to track the round ourselves.
+ * Returns { race meta, podium[], fastestLap } or null if none yet this season.
+ */
+export async function getLastRaceResult(season) {
+  const data = await getJSON(`${JOLPICA_BASE}/${season}/last/results.json?limit=100`)
+  const race = data?.MRData?.RaceTable?.Races?.[0]
+  if (!race) return null
+
+  const results = race.Results.map((r) => ({
+    position: Number(r.position),
+    positionText: r.positionText, // "1", "R" (retired), "D" (DSQ)...
+    points: Number(r.points),
+    grid: Number(r.grid),
+    laps: Number(r.laps),
+    status: r.status,
+    driverId: r.Driver.driverId,
+    code: r.Driver.code || r.Driver.familyName.slice(0, 3).toUpperCase(),
+    givenName: r.Driver.givenName,
+    familyName: r.Driver.familyName,
+    constructorId: r.Constructor.constructorId,
+    constructorName: r.Constructor.name,
+    time: r.Time?.time || null, // gap/total time, only for finishers
+    fastestLapTime: r.FastestLap?.Time?.time || null,
+    fastestLapRank: r.FastestLap?.rank ? Number(r.FastestLap.rank) : null,
+  }))
+
+  // The driver who set the fastest lap of the race (rank 1).
+  const fastestLap = results.find((r) => r.fastestLapRank === 1) || null
+
+  return {
+    season: Number(race.season),
+    round: Number(race.round),
+    raceName: race.raceName,
+    circuitName: race.Circuit.circuitName,
+    locality: race.Circuit.Location.locality,
+    country: race.Circuit.Location.country,
+    date: race.date,
+    podium: results.slice(0, 3),
+    results,
+    fastestLap,
+  }
+}
